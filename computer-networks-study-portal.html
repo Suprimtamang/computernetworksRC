@@ -1,0 +1,899 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101826">
+  <meta name="description" content="An interactive, beginner-friendly study portal for Computer Networks at NOVA FCT, based on the provided Lectures 1–13 slides.">
+  <title>Computer Networks — Interactive Study Portal</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0c1421;
+      --surface: #131f2f;
+      --surface-2: #1b2b40;
+      --surface-3: #22354c;
+      --text: #edf3fa;
+      --muted: #b6c4d5;
+      --line: #304158;
+      --mint: #72e0bd;
+      --sky: #9dcaff;
+      --gold: #ffd17a;
+      --rose: #ff9aab;
+      --violet: #ccb4ff;
+      --radius: 16px;
+      font-synthesis: none;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; scroll-padding-top: 85px; }
+    body {
+      margin: 0;
+      color: var(--text);
+      background:
+        radial-gradient(ellipse at 92% -8%, #24475a 0, transparent 34rem),
+        var(--bg);
+      font: 16px/1.65 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    a { color: var(--sky); }
+    button, input, select, textarea { font: inherit; }
+    button, select, input[type="number"] {
+      color: var(--text);
+      background: var(--surface-3);
+      border: 1px solid #536a84;
+      border-radius: 10px;
+      padding: .62rem .85rem;
+    }
+    button { font-weight: 720; cursor: pointer; }
+    button:hover { border-color: var(--mint); transform: translateY(-1px); }
+    button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible,
+    textarea:focus-visible, summary:focus-visible {
+      outline: 3px solid var(--gold); outline-offset: 3px;
+    }
+    button.primary { color: #071712; background: var(--mint); border-color: var(--mint); }
+    button.subtle { background: transparent; }
+    code, pre, .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    code { color: var(--mint); }
+    pre {
+      overflow-x: auto; padding: 1rem; border: 1px solid var(--line);
+      border-radius: 12px; color: #eff5ff; background: #08111d; line-height: 1.55;
+    }
+    p { margin: .55rem 0 1rem; }
+    h1, h2, h3, h4 { line-height: 1.2; }
+    h1 { font-size: clamp(2.4rem, 6vw, 4.7rem); max-width: 900px; margin: .35rem 0 1rem; letter-spacing: -.04em; }
+    h2 { font-size: clamp(1.7rem, 4vw, 2.45rem); letter-spacing: -.025em; }
+    h3 { font-size: 1.22rem; margin-bottom: .4rem; }
+    h4 { margin: .4rem 0; }
+    .wrap { max-width: 1240px; margin: auto; padding: 0 1.15rem; }
+    .hero { padding: 4.7rem 0 2.6rem; }
+    .eyebrow { color: var(--mint); font-weight: 800; text-transform: uppercase; letter-spacing: .13em; font-size: .82rem; }
+    .hero p { max-width: 790px; color: var(--muted); font-size: 1.12rem; }
+    .hero-actions, .button-row { display: flex; flex-wrap: wrap; align-items: center; gap: .65rem; margin-top: 1.1rem; }
+    .meta-row { display: flex; flex-wrap: wrap; gap: .6rem; margin-top: 1.25rem; }
+    .pill { display: inline-flex; gap: .4rem; align-items: center; padding: .34rem .72rem; color: var(--muted); background: #162638; border: 1px solid var(--line); border-radius: 99px; font-size: .87rem; }
+    .layout { display: grid; grid-template-columns: 235px minmax(0, 1fr); gap: 1.3rem; align-items: start; padding-bottom: 4rem; }
+    aside {
+      position: sticky; top: 1rem; max-height: calc(100vh - 2rem); overflow: auto;
+      padding: 1rem; background: rgba(19,31,47,.88); border: 1px solid var(--line); border-radius: var(--radius);
+      backdrop-filter: blur(12px);
+    }
+    aside strong { display: block; margin: .2rem .5rem .7rem; }
+    aside a { display: block; padding: .42rem .55rem; margin: .12rem 0; border-radius: 8px; color: var(--muted); text-decoration: none; font-size: .9rem; }
+    aside a:hover, aside a:focus { background: var(--surface-2); color: var(--text); }
+    aside .subnav { margin: 0 0 .4rem .8rem; padding-left: .55rem; border-left: 1px solid var(--line); }
+    main { min-width: 0; }
+    section.panel, article.lesson {
+      margin: 0 0 1.1rem; padding: clamp(1rem, 3vw, 1.65rem);
+      background: linear-gradient(155deg, rgba(26,42,62,.98), rgba(17,29,44,.98));
+      border: 1px solid var(--line); border-radius: var(--radius);
+      box-shadow: 0 8px 26px rgba(0,0,0,.13);
+    }
+    article.lesson { scroll-margin-top: 1rem; }
+    .section-kicker { color: var(--mint); font-size: .82rem; font-weight: 800; text-transform: uppercase; letter-spacing: .1em; }
+    .muted { color: var(--muted); }
+    .small { font-size: .9rem; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 235px), 1fr)); gap: .85rem; }
+    .card { padding: 1rem; border: 1px solid var(--line); border-radius: 13px; background: var(--surface-2); }
+    .card > :last-child { margin-bottom: 0; }
+    .callout { padding: .85rem 1rem; border-left: 4px solid var(--mint); border-radius: 8px; background: #102c2c; }
+    .callout.gold { border-color: var(--gold); background: #30291b; }
+    .callout.blue { border-color: var(--sky); background: #17283e; }
+    .callout.rose { border-color: var(--rose); background: #30202a; }
+    .tag { display: inline-block; padding: .2rem .55rem; margin: .12rem; border-radius: 99px; background: #24364e; color: var(--muted); font-size: .78rem; }
+    .source { color: #9daec2; font-size: .82rem; }
+    .source a { color: var(--sky); }
+    .diagram { overflow-x: auto; padding: 1rem; border: 1px solid var(--line); border-radius: 12px; background: #091321; }
+    .flow { display: flex; align-items: stretch; gap: .45rem; min-width: 550px; }
+    .flow > div { flex: 1; display: grid; align-content: center; text-align: center; padding: .75rem; background: var(--surface-2); border-radius: 9px; }
+    .arrow { align-self: center; color: var(--mint); font-size: 1.35rem; font-weight: 900; }
+    .layer-stack { display: grid; grid-template-columns: 1fr 1fr; gap: .35rem; }
+    .layer { padding: .55rem .7rem; border-radius: 8px; background: #22354c; }
+    .layer:nth-child(odd) { border-left: 3px solid var(--sky); }
+    .layer:nth-child(even) { border-left: 3px solid var(--violet); }
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; min-width: 590px; }
+    th, td { padding: .65rem; text-align: left; vertical-align: top; border-bottom: 1px solid var(--line); }
+    th { color: var(--mint); }
+    details { margin: .65rem 0; padding: .8rem 1rem; background: var(--surface-2); border: 1px solid var(--line); border-radius: 11px; }
+    summary { cursor: pointer; font-weight: 750; }
+    .steps { padding-left: 1.35rem; }
+    .steps li { padding: .15rem 0 .5rem .2rem; }
+    .quiz-item { margin: .8rem 0; padding: 1rem; border: 1px solid var(--line); border-radius: 12px; background: #142237; }
+    .quiz-item legend { padding: 0 .35rem; font-weight: 760; }
+    .quiz-item label { display: block; padding: .32rem; cursor: pointer; }
+    .quiz-feedback { min-height: 1.45rem; margin: .45rem 0 0; font-size: .92rem; font-weight: 700; }
+    .good { color: var(--mint); } .try-again { color: var(--gold); }
+    .progress-track { height: 12px; overflow: hidden; border-radius: 99px; background: #08111d; }
+    .progress-value { height: 100%; width: 0; background: linear-gradient(90deg, var(--mint), var(--sky)); transition: width .25s ease; }
+    .flashcard { min-height: 170px; display: grid; align-content: center; margin: .8rem 0; padding: 1.25rem; background: #0b1725; border: 1px solid var(--line); border-radius: 14px; }
+    .flashcard .prompt { color: var(--mint); font-size: 1.15rem; font-weight: 800; }
+    .formula { display: inline-block; max-width: 100%; padding: .45rem .7rem; border-radius: 8px; color: var(--gold); background: #0b1522; overflow-x: auto; }
+    .calc-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(135px, 1fr)); gap: .7rem; align-items: end; }
+    .calc-form label { display: grid; gap: .25rem; color: var(--muted); font-size: .9rem; }
+    .calc-form input { width: 100%; }
+    .result { min-height: 2rem; padding: .5rem 0; color: var(--mint); font-weight: 800; }
+    .answer-box { width: 100%; min-height: 135px; padding: .8rem; color: var(--text); background: #091321; border: 1px solid var(--line); border-radius: 10px; font: 14px/1.55 ui-monospace, monospace; }
+    .mark { color: var(--gold); }
+    .definition-list { display: grid; grid-template-columns: minmax(100px, .7fr) 2fr; gap: .4rem 1rem; }
+    .definition-list dt { color: var(--mint); font-weight: 760; }
+    .definition-list dd { margin: 0; color: var(--muted); }
+    .checklist label { display: flex; gap: .6rem; align-items: baseline; margin: .45rem 0; padding: .55rem; border-radius: 8px; background: var(--surface-2); }
+    .topic-banner { margin: 1.5rem 0 .7rem; padding: .7rem .85rem; background: #1b2b40; border-radius: 10px; color: var(--sky); font-weight: 850; }
+    .deck-label { color: var(--violet); font-size: .8rem; text-transform: uppercase; letter-spacing: .1em; font-weight: 800; }
+    footer { padding: 1rem 1rem 3rem; text-align: center; color: var(--muted); }
+    @media (max-width: 880px) {
+      .layout { grid-template-columns: 1fr; }
+      aside { position: relative; top: auto; max-height: none; display: flex; gap: .35rem; overflow-x: auto; white-space: nowrap; padding: .55rem; }
+      aside strong, aside .subnav { display: contents; }
+      aside a { flex: 0 0 auto; }
+    }
+    @media (max-width: 560px) {
+      .hero { padding-top: 3rem; }
+      .wrap { padding: 0 .7rem; }
+      .layer-stack { grid-template-columns: 1fr; }
+      .definition-list { grid-template-columns: 1fr; }
+      .definition-list dd { margin-bottom: .35rem; }
+    }
+    @media print {
+      :root { color-scheme: light; --bg:#fff; --surface:#fff; --surface-2:#f2f4f6; --surface-3:#f2f4f6; --text:#111; --muted:#333; --line:#bbb; --mint:#08795b; --sky:#134c96; --gold:#885300; }
+      body { background:#fff; color:#111; }
+      aside, button, .hero-actions, .interactive-only, .answer-box { display:none !important; }
+      .layout { display:block; } section.panel, article.lesson { break-inside:avoid; box-shadow:none; background:#fff; }
+      details > * { display:block; }
+      a { color:#134c96; }
+    }
+  </style>
+</head>
+<body>
+  <header class="wrap hero" id="top">
+    <div class="eyebrow">NOVA School of Science and Technology · Lecture-based study guide</div>
+    <h1>Computer Networks<br><span style="color:var(--mint)">Understand it. Explain it. Use it.</span></h1>
+    <p>A guided, interactive route from “what is the Internet?” to TCP, IP, Ethernet, Wi-Fi, VLANs, DHCP, ARP, and DNS. Built for a learner with basic programming knowledge: plain-language lessons first, precise vocabulary and exam practice next.</p>
+    <div class="meta-row">
+      <span class="pill">📚 Lectures 1–13</span><span class="pill">🧠 Active recall</span>
+      <span class="pill">✍️ Open-answer practice</span><span class="pill">🧮 Formula practice</span>
+      <span class="pill">🔒 Offline · no account</span>
+    </div>
+    <div class="hero-actions">
+      <a href="#roadmap"><button class="primary" type="button">Start the learning path</button></a>
+      <a href="#cheatsheet"><button type="button">Open cheat sheet</button></a>
+      <button id="printPage" class="subtle" type="button">Print / save as PDF</button>
+    </div>
+  </header>
+
+  <div class="wrap layout">
+    <aside aria-label="Study portal navigation">
+      <strong>Course map</strong>
+      <a href="#roadmap">Your study path</a>
+      <a href="#diagnostic">Quick self-check</a>
+      <a href="#module-foundations">1 · Architecture & performance</a>
+      <div class="subnav"><a href="#lecture-1">Lecture 1</a><a href="#lecture-2">Lecture 2</a><a href="#lecture-3">Lecture 3</a><a href="#lecture-4">Lecture 4</a></div>
+      <a href="#module-transport">2 · Transport & reliability</a>
+      <div class="subnav"><a href="#lecture-5">Lecture 5</a><a href="#lecture-6">Lecture 6</a><a href="#lecture-7">Lecture 7</a><a href="#lecture-8">Lecture 8 note</a></div>
+      <a href="#module-network">3 · IP & internetworking</a>
+      <div class="subnav"><a href="#lecture-9">Lecture 9</a></div>
+      <a href="#module-lans">4 · Switching & LANs</a>
+      <div class="subnav"><a href="#lecture-10">Lecture 10</a><a href="#lecture-11">Lecture 11</a></div>
+      <a href="#module-services">5 · Network services</a>
+      <div class="subnav"><a href="#lecture-12">Lecture 12</a></div>
+      <a href="#lecture-13">6 · Lecture 13 synthesis</a>
+      <a href="#cheatsheet">Formula cheat sheet</a>
+      <a href="#dns-demo">DNS → HTTP walkthrough</a>
+      <a href="#exam-practice">Exam practice</a>
+      <a href="#flashcards">Flashcards</a>
+      <a href="#quiz">Practice quiz</a>
+    </aside>
+
+    <main>
+      <section class="panel" id="roadmap">
+        <div class="section-kicker">How to use this portal</div>
+        <h2>Study to explain—not just recognize</h2>
+        <div class="grid">
+          <div class="card"><h3>1. Learn</h3><p>Read one lecture section. Draw the packet journey or mechanism in your own words.</p></div>
+          <div class="card"><h3>2. Recall</h3><p>Hide the explanation. Answer the question or use a flashcard before revealing anything.</p></div>
+          <div class="card"><h3>3. Apply</h3><p>Trace a scenario, calculate a value with units, then state what your result means.</p></div>
+          <div class="card"><h3>4. Review</h3><p>Use your errors to choose the next section. Revisit them tomorrow and again before the exam.</p></div>
+        </div>
+        <p class="callout gold"><strong>Scope note:</strong> The provided PDF has Lecture 1–7, then Lecture 9–13; it contains no separate section titled Lecture 8. Its Lecture 13 review groups adaptive retransmission and congestion control with Lectures 7–8. Those TCP topics are included here and labeled as review-linked rather than presented as a missing slide deck.</p>
+        <p class="source">Grounded in the supplied “computer networks.pdf”: lecture summaries on PDF pp. 82, 165, 257, 361, 449–450, 519–520, 596, 603, 693–694, 796, 874–875, 992–993 and 1047–1048. Administrative details and exam logistics are intentionally left out. A supplementary CSMA/CA explanation is included because it is a requested learning topic.</p>
+      </section>
+
+      <section class="panel" id="diagnostic">
+        <div class="section-kicker">Before you begin</div>
+        <h2>Quick self-check</h2>
+        <p>These are not grades. Pick what feels true now; repeat after studying and notice what changed.</p>
+        <div class="checklist" id="confidenceChecklist">
+          <label><input type="checkbox" data-progress> I can distinguish a network-layer IP address from a link-layer MAC address.</label>
+          <label><input type="checkbox" data-progress> I can explain why a successful <code>write()</code> need not send every requested byte.</label>
+          <label><input type="checkbox" data-progress> I can compare Stop-and-Wait, Go-Back-N, and TCP.</label>
+          <label><input type="checkbox" data-progress> I can calculate a basic bandwidth-delay or Stop-and-Wait utilization question.</label>
+          <label><input type="checkbox" data-progress> I can describe what a switch learns from an Ethernet frame.</label>
+          <label><input type="checkbox" data-progress> I can trace DNS, gateway, and MAC-address resolution for a web request.</label>
+        </div>
+        <div class="progress-track" role="progressbar" aria-label="Self-check progress" aria-valuemin="0" aria-valuemax="6" aria-valuenow="0"><div id="progressBar" class="progress-value"></div></div>
+        <p id="progressLabel" class="muted small">0 of 6 checked</p>
+      </section>
+
+      <div class="topic-banner" id="module-foundations">Module 1 · Architecture, layering & performance · Lectures 1–4</div>
+
+      <article class="lesson" id="lecture-1">
+        <div class="section-kicker">Lecture 1 · Internet foundations</div>
+        <h2>What is a computer network?</h2>
+        <p>A computer network is a set of devices connected by communication links and rules (protocols) that let applications exchange data. The Internet is not one giant cable or one company’s network: it is a <strong>network of networks</strong> that interconnects homes, universities, companies, and Internet service providers.</p>
+        <div class="grid">
+          <div class="card"><h3>One common network-layer service</h3><p>Networks underneath may use different technologies, but IP supplies a common addressing and packet-forwarding layer across them. IP addresses identify interfaces in this shared logical space.</p></div>
+          <div class="card"><h3>Best effort means no promise</h3><p>IP (Layer 3) tries to forward a datagram, but by itself does not promise delivery, order, a delay bound, or no duplicates. Packets may be lost, delayed, reordered, or duplicated. Higher layers can add guarantees where needed.</p></div>
+          <div class="card"><h3>Networks exist for applications</h3><p>Web browsing, file transfer, voice calls, video, games, and messaging have different needs. Some prioritize throughput; interactive voice prioritizes latency and low jitter; a reliable download cares that every byte arrives.</p></div>
+        </div>
+        <h3>Requirements worth naming in an answer</h3>
+        <div class="table-wrap"><table><thead><tr><th>Requirement</th><th>Meaning</th><th>Example concern</th></tr></thead><tbody>
+          <tr><td>Connectivity / reachability</td><td>Can a source communicate with the intended destination?</td><td>Can packets cross multiple networks to reach a server?</td></tr>
+          <tr><td>Multiplexing</td><td>Can multiple users, applications, or flows share resources and still be distinguished?</td><td>Ports distinguish processes; statistical sharing uses capacity when flows need it.</td></tr>
+          <tr><td>Congestion handling</td><td>What happens when offered traffic exceeds a link or router’s capacity?</td><td>Queues grow, delay rises, buffers may overflow and drop packets.</td></tr>
+          <tr><td>Performance</td><td>How fast, how quickly, and how consistently does data arrive?</td><td>Throughput, latency, and jitter.</td></tr>
+        </tbody></table></div>
+        <p class="callout"><strong>Exam-ready sentence:</strong> “The Internet is a network of interconnected networks using IP as a common Layer-3 addressing and forwarding service. IP is best effort, so delivery and timing guarantees must come from another mechanism if the application needs them.”</p>
+        <p class="source">Slide coverage: Lecture 1 summary, PDF p. 82. The administrative/course-information slides are omitted.</p>
+      </article>
+
+      <article class="lesson" id="lecture-2">
+        <div class="section-kicker">Lecture 2 · Abstraction, layers & sockets</div>
+        <h2>Layers let each part solve one kind of problem</h2>
+        <p>Layering is an abstraction: an application uses a service without needing to know every detail of the physical link. A protocol defines the messages and rules peers at the same layer follow. Each layer uses the layer below and provides a service to the layer above.</p>
+        <div class="layer-stack" aria-label="OSI layers paired with familiar protocol examples">
+          <div class="layer"><strong>Application</strong><br>HTTP, DNS</div><div class="layer">Application data</div>
+          <div class="layer"><strong>Presentation</strong><br>Representation / encoding</div><div class="layer">Often handled within applications</div>
+          <div class="layer"><strong>Session</strong><br>Dialog coordination</div><div class="layer">Often combined with application</div>
+          <div class="layer"><strong>Transport</strong><br>TCP, UDP · process to process</div><div class="layer">Ports and delivery service</div>
+          <div class="layer"><strong>Network</strong><br>IP · host/interface to host/interface</div><div class="layer">IP addressing and routing</div>
+          <div class="layer"><strong>Data link</strong><br>Ethernet, Wi-Fi · local link</div><div class="layer">Frames and MAC addresses</div>
+          <div class="layer"><strong>Physical</strong><br>Signals, bits on a medium</div><div class="layer">Electrical / optical / radio signals</div>
+        </div>
+        <p class="muted small">The Internet’s practical stack commonly combines the OSI session/presentation ideas into the application layer. The OSI model is a vocabulary for responsibilities, not a requirement that every implementation have seven separate programs.</p>
+        <h3>Encapsulation: wrapping data as it travels down</h3>
+        <div class="diagram"><div class="flow"><div>HTTP data</div><span class="arrow">→</span><div>TCP header + data<br><small>segment</small></div><span class="arrow">→</span><div>IP header + segment<br><small>datagram</small></div><span class="arrow">→</span><div>Link header + datagram<br><small>frame / bits</small></div></div></div>
+        <p>At the receiver, decapsulation removes the headers in reverse order. A router usually reads the IP header and forwards the packet; it does not need to understand the HTTP request.</p>
+        <div class="grid">
+          <div class="card"><h3>Socket = application endpoint</h3><p>A socket API lets a program communicate through the network stack. A TCP server typically performs passive open with <code>socket → bind → listen → accept</code>; a client actively connects with <code>socket → connect</code>.</p></div>
+          <div class="card"><h3>Ports = process demultiplexing</h3><p>An IP address gets a packet to a host interface; a transport port helps the OS deliver it to the correct process. A connection is commonly identified by source/destination IP addresses and ports plus the transport protocol.</p></div>
+        </div>
+        <h3>Socket programming: the program's view</h3>
+        <pre>Server: socket → setsockopt → bind → listen → accept
+Client: socket → connect
+Both:   read/write bytes → close</pre>
+        <p><code>socket()</code> returns a file descriptor (a small integer handle). <code>bind()</code> associates the server with a local address/port; <code>listen()</code> prepares a TCP listening socket; <code>accept()</code> returns a <em>new connected descriptor</em> for one client. The client calls <code>connect()</code>. After connecting, each side uses <code>read()</code> and <code>write()</code>; either can transfer fewer bytes than requested, so a real program loops and tracks how many bytes remain. <code>close()</code> releases the descriptor. This is the same lifecycle used by the Lab 7 TCP file-transfer programs.</p>
+        <p class="source">Slide coverage: Lecture 2 summary, PDF p. 165; socket and encapsulation examples throughout the lecture.</p>
+      </article>
+
+      <article class="lesson" id="lecture-3">
+        <div class="section-kicker">Lecture 3 · Network architecture & switching</div>
+        <h2>How do networks grow and share resources?</h2>
+        <p>A useful design must serve multiple stakeholders: users and application builders want useful connectivity and performance; network operators need a system they can deploy, manage, and scale. The lecture frames network design around <strong>scalable connectivity</strong>, <strong>cost-effective sharing</strong>, and <strong>support for common services</strong>.</p>
+        <div class="grid">
+          <div class="card"><h3>Direct link</h3><p>A physical or logical link connects two participants. A direct link is simple, but connecting every pair in a large network requires many links.</p></div>
+          <div class="card"><h3>Switching</h3><p>A switch connects multiple links and forwards data toward an output. It lets many endpoints communicate without a direct cable between every pair.</p></div>
+          <div class="card"><h3>Store-and-forward</h3><p>A switch receives a packet/frame (or enough of it to make a forwarding decision) and forwards it over the next link. The packet can wait in a queue when the output is busy.</p></div>
+        </div>
+        <h3>Addresses answer “who?”; routing answers “which way?”</h3>
+        <p>An address identifies a reachable endpoint/interface. A route or forwarding decision selects a next hop toward a destination. These are related but different jobs: the address names the destination; the route helps move the packet there.</p>
+        <div class="table-wrap"><table><thead><tr><th>Delivery style</th><th>Meaning</th><th>Example</th></tr></thead><tbody>
+          <tr><td>Unicast</td><td>One sender to one destination.</td><td>A client requests one web server.</td></tr>
+          <tr><td>Broadcast</td><td>One sender to all relevant nodes in a local broadcast domain.</td><td>An ARP request on an IPv4 LAN.</td></tr>
+          <tr><td>Multicast</td><td>One sender to members of a group; the network can replicate where paths branch.</td><td>Receivers join a group instead of each getting a separate unicast stream.</td></tr>
+        </tbody></table></div>
+        <h3>Sharing capacity: circuit and packet switching</h3>
+        <p><strong>Circuit switching</strong> reserves a path/resource for a session, which can make capacity predictable but may leave a reservation unused. <strong>Packet switching</strong> shares link capacity among bursts of traffic; this statistical multiplexing is efficient for bursty computer data, but can create queues and congestion.</p>
+        <p class="callout gold"><strong>Congestion chain:</strong> traffic arrives faster than an outgoing link can transmit → queue builds → latency increases → finite buffer fills → packets are dropped. A network cannot create bandwidth by buffering; it only delays the overload for a while.</p>
+        <p class="source">Slide coverage: Lecture 3 summary, PDF p. 257.</p>
+      </article>
+
+      <article class="lesson" id="lecture-4">
+        <div class="section-kicker">Lecture 4 · Performance & channels</div>
+        <h2>Bandwidth is not latency—and neither is throughput</h2>
+        <div class="grid">
+          <div class="card"><h3>Bandwidth / link rate</h3><p>The transmission capacity of a link, usually bits per second. It determines how quickly bits can be put onto the link.</p></div>
+          <div class="card"><h3>Latency / delay</h3><p>Time from sending to receiving. It includes processing, queueing, transmission, and propagation delays.</p></div>
+          <div class="card"><h3>Throughput</h3><p>The achieved rate of useful data transfer. It is limited by the bottleneck and can be less than the link’s nominal bandwidth.</p></div>
+          <div class="card"><h3>Jitter</h3><p>Variation in packet delay. A steady stream can play smoothly; variable delay may require a playback buffer and can make real-time media choppy.</p></div>
+        </div>
+        <h3>Two delays to never confuse</h3>
+        <p><strong>Transmission delay</strong> is the time to put a packet of <em>L</em> bits onto a link with rate <em>R</em> bits/s: <span class="formula">d<sub>trans</sub> = L / R</span>. <strong>Propagation delay</strong> is the time for a signal to travel a distance <em>d</em> at propagation speed <em>s</em>: <span class="formula">d<sub>prop</sub> = d / s</span>. Increasing the link rate reduces transmission time, not the physical propagation time.</p>
+        <p>A path’s delay can also include processing at devices and time waiting in queues. For several store-and-forward links, each hop contributes its relevant transmission and propagation delays; queueing varies with load.</p>
+        <h3>Delay × bandwidth product: bits “in flight”</h3>
+        <p>Multiply a link rate by a round-trip time to estimate how much data can be in flight before an acknowledgment returns. For a one-way link, use the relevant one-way delay; for the Stop-and-Wait formula below, use RTT.</p>
+        <p class="formula">BDP (bits) = rate (bits/s) × delay (s)</p>
+        <p><strong>Example:</strong> at 20 Mb/s and 50 ms one-way delay, the one-way BDP is 20,000,000 × 0.05 = 1,000,000 bits = 125,000 bytes. Convert milliseconds to seconds and bits to bytes carefully.</p>
+        <h3>Which application is constrained by which metric?</h3>
+        <ul><li>A small request/reply can be latency-bound: waiting for a round trip dominates sending the few bytes.</li><li>A large file can be bandwidth-bound once a pipeline is full.</li><li>A live stream may need sustained throughput, bounded startup time, and low jitter.</li></ul>
+        <p class="source">Slide coverage: Lecture 4 summary, PDF p. 361.</p>
+      </article>
+
+      <div class="topic-banner" id="module-transport">Module 2 · Transport & reliable transmission · Lectures 5–8 review link</div>
+
+      <article class="lesson" id="lecture-5">
+        <div class="section-kicker">Lecture 5 · UDP, ports & Stop-and-Wait</div>
+        <h2>Transport connects processes, not just computers</h2>
+        <p>IP moves datagrams between hosts/interfaces. The transport layer delivers data between application processes using <strong>ports</strong>. It may add reliability, flow control, or congestion control—but UDP deliberately keeps its service small.</p>
+        <div class="table-wrap"><table><thead><tr><th>Property</th><th>UDP</th><th>TCP</th></tr></thead><tbody>
+          <tr><td>Service</td><td>Connectionless datagrams</td><td>Connection-oriented byte stream</td></tr>
+          <tr><td>Ports / multiplexing</td><td>Yes</td><td>Yes</td></tr>
+          <tr><td>Built-in reliable ordered delivery</td><td>No</td><td>Yes, using sequence numbers, acknowledgments, retransmission, and windows</td></tr>
+          <tr><td>Message boundaries</td><td>Each UDP datagram is a message</td><td>TCP exposes a byte stream, not application message boundaries</td></tr>
+          <tr><td>Typical trade-off</td><td>Less transport machinery; application may accept loss or implement what it needs</td><td>More guarantees and state; application waits for a reliable ordered stream</td></tr>
+        </tbody></table></div>
+        <p>UDP’s header includes source and destination ports, length, and checksum. The checksum can detect corruption; it does not retransmit data. A pseudoheader in the checksum calculation helps detect delivery to the wrong IP endpoints. UDP’s checksum is optional in IPv4 (but not in IPv6).</p>
+        <h3>ARQ: use acknowledgments and timeouts to recover</h3>
+        <p>Automatic Repeat reQuest (ARQ) uses acknowledgments and retransmission. If a data frame or its ACK is lost, the sender’s timer expires and it resends. Sequence numbers let the receiver recognize a duplicate when the original arrived but its ACK was lost.</p>
+        <div class="diagram"><div class="flow"><div>Sender<br>DATA 0 →</div><span class="arrow">→</span><div>Receiver<br>accepts DATA 0</div><span class="arrow">←</span><div>ACK 1 →<br><small>next expected</small></div></div></div>
+        <p><strong>Stop-and-Wait</strong> allows only one unacknowledged packet at a time. It is simple but wastes a high-delay, high-rate link while waiting for the ACK.</p>
+        <p class="formula">U ≈ T<sub>data</sub> / (RTT + T<sub>data</sub>) = 1 / (1 + RTT / T<sub>data</sub>)</p>
+        <p>Here <em>T<sub>data</sub> = L/R</em>. The approximation assumes ACK transmission and processing are small. If RTT = 2T<sub>prop</sub> and ACK time is ignored, the same result is <em>1/(1 + 2a)</em>, where <em>a = T<sub>prop</sub>/T<sub>data</sub></em>. A very small packet on a long-RTT path has low utilization.</p>
+        <p class="source">Slide coverage: Lecture 5 summary, PDF pp. 449–450.</p>
+      </article>
+
+      <article class="lesson" id="lecture-6">
+        <div class="section-kicker">Lecture 6 · Sliding windows</div>
+        <h2>Keep the path busy with a window</h2>
+        <p>A sliding-window protocol allows multiple packets to be outstanding. The sender remembers sent-but-not-yet-acknowledged data; as ACKs arrive, the send window advances. The receiver tracks what it can accept. This pipeline can fill a path’s bandwidth-delay product rather than waiting after every packet.</p>
+        <p class="formula">Approx. utilization = min(1, W × T<sub>data</sub> / (RTT + T<sub>data</sub>))</p>
+        <p><em>W</em> is the number of packets the sender can keep in flight. To approach full utilization, W needs to be large enough to cover the round-trip waiting time—roughly the bandwidth-delay product in packets.</p>
+        <div class="table-wrap"><table><thead><tr><th>Protocol</th><th>Receiver behavior</th><th>What happens after a loss?</th></tr></thead><tbody>
+          <tr><td>Go-Back-N (GBN)</td><td>Typically accepts in-order frames and cumulatively ACKs the next expected sequence number.</td><td>Sender retransmits the missing frame and all later outstanding frames that may have been discarded.</td></tr>
+          <tr><td>Selective Repeat (SR)</td><td>Can buffer correctly received out-of-order frames and acknowledge them individually.</td><td>Retransmit only missing/unacknowledged frames. More buffering and state are required.</td></tr>
+        </tbody></table></div>
+        <h3>Why sequence-number space limits the window</h3>
+        <p>Sequence numbers wrap around. If an old frame and a new frame have the same number while both could be confused, the receiver cannot tell which is which. For an <em>m</em>-bit sequence number space of size <em>N = 2<sup>m</sup></em>, Selective Repeat needs the window no larger than half the space (<em>W ≤ N/2</em>) so old and new ranges do not overlap ambiguously. Go-Back-N’s sender window has its own common bound <em>W ≤ N − 1</em>; follow the protocol variant and assumptions stated in the question.</p>
+        <p>TCP applies sliding-window ideas to bytes: sequence numbers identify byte positions, ACKs are cumulative, and flow/congestion windows bound what can be in flight.</p>
+        <p class="source">Slide coverage: Lecture 6 summary, PDF pp. 519–520.</p>
+      </article>
+
+      <article class="lesson" id="lecture-7">
+        <div class="section-kicker">Lecture 7 · TCP connections & control</div>
+        <h2>TCP turns a best-effort network into a reliable byte stream</h2>
+        <p>TCP keeps per-connection state at each endpoint. It numbers bytes, acknowledges received data, retransmits missing data, delivers bytes in order, and uses windows to avoid overrunning the receiver or the network.</p>
+        <h3>TCP segment: a transport header plus data</h3>
+        <p>Important fields include source/destination ports, sequence number, acknowledgment number, control flags (such as SYN, ACK, FIN, RST), advertised receive window, checksum, and payload. The IP packet carries the TCP segment across networks.</p>
+        <h3>Three-way handshake</h3>
+        <div class="diagram"><div class="flow"><div>Client<br>SYN, seq = x</div><span class="arrow">→</span><div>Server<br>SYN + ACK, seq = y, ack = x+1</div><span class="arrow">←</span><div>Client<br>ACK, ack = y+1</div></div></div>
+        <p>The SYNs establish shared connection state and exchange each side’s initial sequence number. The third ACK confirms that both endpoints received the opening information. SYN consumes one sequence-number position.</p>
+        <h3>Closing and reset</h3>
+        <p>Each direction can close independently. A FIN says “I have no more data to send”; the peer ACKs it, and later sends its own FIN when ready. This is a symmetric close (often four control segments, with ACKs sometimes combined). RST aborts a connection abruptly rather than performing an orderly close.</p>
+        <h3>Flow control vs. congestion control</h3>
+        <div class="grid">
+          <div class="card"><h4>Receiver protection · rwnd</h4><p>The receiver advertises how much buffer space it can accept. This prevents a fast sender from overflowing the receiver’s memory.</p></div>
+          <div class="card"><h4>Network protection · cwnd</h4><p>The sender limits data in flight based on the network’s estimated capacity. Congestion control reacts to network signals/loss instead of flooding congested paths.</p></div>
+        </div>
+        <p class="formula">Send window ≤ min(rwnd, cwnd)</p>
+        <p><strong>Adaptive retransmission timeout:</strong> the sender estimates round-trip time from observations and sets a retransmission timeout (RTO) with safety margin. A fixed timer could be too short on a slow path or wasteful on a fast one. After a timeout, TCP retransmits; congestion response also reduces sending pressure.</p>
+        <p class="callout"><strong>Lost-packet trace:</strong> a segment is missing → later data may reveal a gap through duplicate cumulative ACKs → sender can retransmit the missing bytes (fast retransmit) or wait for timeout → the receiver restores an in-order byte stream → congestion control reduces the sending rate when loss signals congestion.</p>
+        <p class="source">Slide coverage: Lecture 7 summary, PDF pp. 596 and 603; Lecture 13 recap links adaptive retransmission/congestion control to Lectures 7–8.</p>
+      </article>
+
+      <article class="lesson" id="lecture-8">
+        <div class="section-kicker">Lecture 8 · Source-deck note</div>
+        <h2>What the supplied slides do—and do not—show</h2>
+        <p>The provided PDF moves from a title slide for Lecture 7 to a title slide for Lecture 9. There is no separate Lecture 8 slide section to reproduce. Rather than invent its lecture contents, this course places the recap-listed TCP material—adaptive retransmission and congestion control—alongside Lecture 7’s TCP connection and flow-control concepts.</p>
+        <div class="callout blue"><strong>Study the distinction:</strong> flow control protects the receiver using its advertised window; congestion control protects the network using the sender’s congestion window. TCP’s usable sending window is constrained by both.</div>
+        <p class="source">Evidence: Lecture 13 recap and “What to Review, and Where,” PDF pp. 1047–1048.</p>
+      </article>
+
+      <div class="topic-banner" id="module-network">Module 3 · IP, routing & internetworking · Lecture 9</div>
+
+      <article class="lesson" id="lecture-9">
+        <div class="section-kicker">Lecture 9 · Addressing, NAT, IPv6 & multicast</div>
+        <h2>IP addresses have a network prefix and an interface part</h2>
+        <p>An IPv4 address is 32 bits. CIDR notation <code>192.0.2.37/24</code> says the first 24 bits are the network prefix; the remaining 8 bits identify an address within that subnet. A subnet mask has 1s for prefix bits and 0s for host bits.</p>
+        <p>Classful addressing used fixed /8, /16, and /24 boundaries. CIDR replaced those rigid classes with variable-length prefixes, allowing more efficient allocation and route aggregation.</p>
+        <h3>Subnet arithmetic example</h3>
+        <p>For <code>192.0.2.37/24</code>, mask = <code>255.255.255.0</code>, network = <code>192.0.2.0</code>, and 8 host bits give 2<sup>8</sup> = 256 total address patterns. In a conventional IPv4 subnet, the all-zero host address is the network identifier and the all-one host address is broadcast, leaving 254 ordinary host addresses. Small special prefixes such as /31 and /32 have different usage rules.</p>
+        <h3>Special ranges, NAT, IPv6</h3>
+        <ul>
+          <li>Private IPv4 ranges are intended for internal networks and are not globally routed as public destinations. NAT commonly rewrites private source address/port mappings to a public address and maps returning traffic back.</li>
+          <li>NAT conserves public IPv4 addresses but changes end-to-end addressing behavior; it is not the same thing as a firewall.</li>
+          <li>IPv6 uses 128-bit addresses, has a much larger space, and writes hexadecimal groups separated by colons. Leading zeros may be omitted and one run of zero groups may be compressed with <code>::</code>.</li>
+        </ul>
+        <h3>Multicast: send once to a group</h3>
+        <p>A sender targets a multicast group address. Receivers join the group; for IPv4, IGMP communicates local membership. Multicast routing builds distribution paths and replicates packets where paths branch, rather than asking the sender to send a separate unicast copy to every receiver.</p>
+        <p class="callout gold"><strong>Forwarding vs. routing:</strong> routing computes/maintains paths; forwarding is the per-packet action of selecting an output/next hop. State this difference when a question asks how a router moves traffic.</p>
+        <p class="source">Slide coverage: Lecture 9 summary, PDF pp. 693–694.</p>
+      </article>
+
+      <div class="topic-banner" id="module-lans">Module 4 · Switches, Ethernet & Wi-Fi · Lectures 10–11</div>
+
+      <article class="lesson" id="lecture-10">
+        <div class="section-kicker">Lecture 10 · Switch learning & loop prevention</div>
+        <h2>A Layer-2 switch learns by watching source addresses</h2>
+        <p>A switch keeps a forwarding table mapping <strong>MAC address → port</strong>. When a frame arrives, it learns the source MAC on the incoming port. If the destination is known, it forwards only to the matching port (unless that is already the incoming port). If unknown, or if the frame is broadcast, it floods out other eligible ports.</p>
+        <ol class="steps">
+          <li>Frame arrives on port 2, source MAC A, destination MAC B.</li>
+          <li>Learn “A is reachable via port 2” (refreshing a previous entry if necessary).</li>
+          <li>Look up B. If B is known on port 4, send there; if unknown, flood other ports.</li>
+          <li>A reply from B teaches the switch which port reaches B. Later A↔B frames can be unicast through the learned ports.</li>
+        </ol>
+        <h3>Why a loop is dangerous</h3>
+        <p>Redundant links are useful for resilience, but a Layer-2 loop plus broadcast/unknown-destination flooding can circulate frames indefinitely and multiply traffic. The Spanning Tree Protocol (STP) elects a root bridge and blocks selected redundant links to form a loop-free logical tree. A blocked link can be activated if the active topology fails.</p>
+        <h3>Ways to switch data</h3>
+        <div class="table-wrap"><table><thead><tr><th>Approach</th><th>How forwarding works</th><th>Intuition</th></tr></thead><tbody>
+          <tr><td>Datagram / packet switching</td><td>Each packet is forwarded using its destination; packets can be routed independently.</td><td>Ethernet/IP-style forwarding.</td></tr>
+          <tr><td>Virtual circuit</td><td>A logical path is set up; switches keep state and forward using a short circuit identifier.</td><td>Label/table state represents the established path.</td></tr>
+          <tr><td>Source routing</td><td>The packet carries path/route instructions that guide intermediate forwarding.</td><td>The sender names more of the route.</td></tr>
+        </tbody></table></div>
+        <p class="source">Slide coverage: Lecture 10 summary, PDF p. 796.</p>
+      </article>
+
+      <article class="lesson" id="lecture-11">
+        <div class="section-kicker">Lecture 11 · Ethernet, MACs, Wi-Fi & VLANs</div>
+        <h2>Frames move across one link; routers move between networks</h2>
+        <h3>Ethernet frame</h3>
+        <p>An Ethernet frame includes a preamble for synchronization, destination and source MAC addresses, a Type field, payload, and a frame-check sequence (CRC) for error detection. Ethernet detects a damaged frame; it does not itself guarantee that the frame is retransmitted end-to-end. Classic Ethernet payload MTU is commonly 1500 bytes.</p>
+        <h3>MAC addresses and learning</h3>
+        <p>A MAC address is a 48-bit link-layer identifier, commonly shown as six hexadecimal byte pairs such as <code>00:1A:2B:3C:4D:5E</code>. Switches learn source MACs and associate them with ports. MAC addressing is for delivery on a local Layer-2 link; IP addresses provide logical addressing across routed networks.</p>
+        <h3>Wi-Fi: access points and CSMA/CA</h3>
+        <p>In infrastructure mode, stations (phones/laptops) associate with an access point (AP); the AP bridges wireless stations into the LAN. Stations communicate through the AP, rather than directly with each other. An SSID names the wireless network; WPA2/WPA3 provide authentication and link protection.</p>
+        <p><strong>CSMA/CA (Carrier Sense Multiple Access with Collision Avoidance):</strong> Wi-Fi stations listen before transmitting, defer when the medium is busy, and use randomized backoff to reduce the chance of colliding with another station. A receiver’s ACK confirms a frame arrived; missing ACK can trigger a retry. Wireless transmitters generally cannot reliably listen for a collision while sending, so Wi-Fi tries to avoid collisions rather than detect them as classic shared-wire Ethernet did. Hidden stations and radio interference make “listen first” imperfect; optional RTS/CTS can help reserve airtime in some situations.</p>
+        <p class="source">CSMA/CA is supplementary context requested for this portal. The supplied Lecture 11 slides cover Wi-Fi infrastructure, APs, association, and LAN integration (PDF pp. 837–845), but do not present a dedicated CSMA/CA mechanism lesson.</p>
+        <h3>LAN, broadcast domain, and VLAN</h3>
+        <p>A LAN is a local administrative and Layer-2 domain. Switches flood broadcasts within a broadcast domain; a router separates Layer-2 broadcast domains. A VLAN partitions one physical switching infrastructure into multiple logical LANs. Devices in different VLANs need Layer-3 routing to communicate.</p>
+        <p>On a trunk between switches, IEEE 802.1Q tags identify the VLAN. The VLAN ID is 12 bits; 4094 VLAN IDs are usable (0 and 4095 are reserved). Switch learning is kept per VLAN, so a MAC-to-port entry belongs to a VLAN context.</p>
+        <p class="source">Slide coverage: Lecture 11 summary, PDF pp. 874–875; VLAN details pp. 852–870.</p>
+      </article>
+
+      <div class="topic-banner" id="module-services">Module 5 · Getting onto the network & naming · Lecture 12</div>
+
+      <article class="lesson" id="lecture-12">
+        <div class="section-kicker">Lecture 12 · DHCP, ARP, gateway, DNS & IPv6</div>
+        <h2>What happens when a new device joins a network?</h2>
+        <h3>DHCP: lease configuration automatically</h3>
+        <p>DHCP supplies a host with an address lease and configuration such as subnet mask, default gateway, and DNS server. A new IPv4 host begins without a usable address and uses broadcast communication to discover a server. Remember <strong>DORA</strong>:</p>
+        <div class="diagram"><div class="flow"><div><strong>D</strong>iscover<br>client broadcasts</div><span class="arrow">→</span><div><strong>O</strong>ffer<br>server proposes config</div><span class="arrow">→</span><div><strong>R</strong>equest<br>client asks for offer</div><span class="arrow">→</span><div><strong>A</strong>ck<br>server grants lease</div></div></div>
+        <p>DHCP uses UDP ports 68 (client) and 67 (server). Relay agents let a server on another network serve clients whose initial broadcast cannot cross a router. Leases expire and can be renewed.</p>
+        <h3>ARP: find a local IPv4 next-hop MAC</h3>
+        <p>To send an IPv4 packet over Ethernet, a host needs a destination MAC address for the local link. If the target IP is on the same subnet, ARP resolves that host’s IP to its MAC. If the target is off-subnet, the host resolves the <em>default gateway’s IP</em> to the gateway’s MAC—not the remote server’s MAC. ARP request is broadcast; the matching device replies with its MAC, usually by unicast. Results are cached temporarily.</p>
+        <h3>Gateway: same IP destination, hop-by-hop link addresses</h3>
+        <p>For an off-subnet destination, the host sends the frame to its default router. The IP destination remains the remote host as the packet crosses routers; the link-layer source/destination MAC addresses are rewritten for each hop. A router removes the incoming frame, routes the IP packet, and wraps it in a new outgoing-link frame. IPv6 uses Neighbor Discovery Protocol (NDP), not ARP.</p>
+        <h3>DNS: translate a name into an address</h3>
+        <p>DNS is a distributed hierarchy of names, zones, and servers. A resolver can use cached answers; otherwise it follows referrals (root → top-level domain → authoritative server) to find a record such as an A (IPv4) or AAAA (IPv6) address. DNS answers have TTLs and may be cached.</p>
+        <p class="source">Slide coverage: Lecture 12 summary, PDF pp. 992–993. The lecture also introduces IPv6 addressing; Lecture 9 covers its address-space context.</p>
+      </article>
+
+      <section class="panel" id="dns-demo">
+        <div class="section-kicker">Interactive walkthrough · Name to web page</div>
+        <h2>What happens after you type <code>www.fct.unl.pt</code>?</h2>
+        <p>Step through a typical new-connection case. Caches may skip several lookup steps; the sequence shows the ideas, not a guarantee of the exact packets in every real browser.</p>
+        <div class="grid">
+          <div class="card"><div class="deck-label" id="dnsCounter">Step 1 of 9</div><h3 id="dnsTitle">Application begins</h3><p id="dnsText">The browser needs an address for the name and a connection to the web server.</p></div>
+          <div class="card"><h3>Think about the destination</h3><p id="dnsQuestion">What question must the host answer before sending an IP packet?</p><details><summary>Show the key point</summary><p id="dnsAnswer">It needs an IP address for the server name. A cached DNS answer may already provide one.</p></details></div>
+        </div>
+        <div class="button-row"><button id="dnsPrev" type="button">Previous step</button><button id="dnsNext" class="primary" type="button">Next step</button><button id="dnsReset" type="button">Restart</button></div>
+      </section>
+
+      <div class="topic-banner">DNS + HTTP request: full journey</div>
+      <section class="panel">
+        <h2>Put the services together</h2>
+        <ol class="steps">
+          <li><strong>DNS lookup:</strong> the resolver obtains the server’s IP address (or uses a cached result).</li>
+          <li><strong>Local delivery decision:</strong> the client compares the destination IP with its own prefix. If remote, it sends to the configured default gateway.</li>
+          <li><strong>ARP, if needed:</strong> resolve the local next-hop IPv4 address (often the gateway) to a MAC address.</li>
+          <li><strong>TCP connection:</strong> client and server exchange SYN, SYN-ACK, ACK. The transport ports identify the client and web service process.</li>
+          <li><strong>HTTP request:</strong> the browser sends an application message such as <code>GET / HTTP/1.1</code> with a <code>Host: www.fct.unl.pt</code> header inside TCP bytes.</li>
+          <li><strong>Encapsulation and forwarding:</strong> TCP adds transport metadata; IP addresses the endpoints; each link uses a frame with local MAC addresses. Routers forward based on IP.</li>
+          <li><strong>Response:</strong> server sends HTTP response bytes over TCP; TCP delivers them in order to the browser, which renders the page.</li>
+        </ol>
+        <p class="callout"><strong>Common exam trap:</strong> DNS gives the application an IP address; ARP finds a MAC address for the next local hop. They solve different naming/address-resolution problems.</p>
+      </section>
+
+      <div class="topic-banner" id="lecture-13">Module 6 · Lecture 13 synthesis & exam readiness</div>
+      <article class="lesson">
+        <div class="section-kicker">Lecture 13 · Organize the full story</div>
+        <h2>Connect the topics into one mental model</h2>
+        <p>The Lecture 13 slides are a revision tour, not a new protocol unit. Their summary groups the course into foundations and performance, transport/reliability, IP, and local networks. The following progression is a useful way to structure an open-ended answer:</p>
+        <ol class="steps">
+          <li><strong>Application need:</strong> identify communication endpoints and whether the app needs throughput, low delay/jitter, or reliable delivery.</li>
+          <li><strong>Transport:</strong> choose UDP’s minimal datagram service or TCP’s reliable connection-oriented byte stream. Name the ports/processes.</li>
+          <li><strong>Network:</strong> give the destination IP, determine local vs remote prefix, and select direct host or default gateway.</li>
+          <li><strong>Link:</strong> deliver a frame to the next-hop MAC using Ethernet or Wi-Fi. Switches learn MAC-to-port mappings; STP prevents loops.</li>
+          <li><strong>Services:</strong> DHCP supplies configuration; DNS resolves names; ARP/NDP resolves a local next-hop link address.</li>
+          <li><strong>Performance and failures:</strong> identify bottlenecks, queueing, packet loss, ACK/retransmission behavior, and receiver/network protections.</li>
+        </ol>
+        <p class="source">Slide coverage: Lecture 13 summary and review map, PDF pp. 1047–1048. Administrative exam rules omitted.</p>
+      </article>
+
+      <section class="panel" id="cheatsheet">
+        <div class="section-kicker">Quick reference · Use after trying from memory</div>
+        <h2>Formula & mechanism cheat sheet</h2>
+        <h3>Performance and reliability formulas</h3>
+        <div class="table-wrap"><table><thead><tr><th>Quantity</th><th>Formula</th><th>Units / reminder</th></tr></thead><tbody>
+          <tr><td>Transmission delay</td><td><code>L / R</code></td><td>L bits ÷ R bits/s = seconds.</td></tr>
+          <tr><td>Propagation delay</td><td><code>d / s</code></td><td>Distance ÷ propagation speed = seconds.</td></tr>
+          <tr><td>End-to-end delay</td><td><code>processing + queueing + transmission + propagation</code></td><td>Sum relevant delays along the path; queueing depends on load.</td></tr>
+          <tr><td>Bandwidth-delay product</td><td><code>R × RTT</code></td><td>bits in flight; divide by 8 for bytes.</td></tr>
+          <tr><td>Stop-and-Wait utilization</td><td><code>Tdata / (RTT + Tdata)</code></td><td>Assume small ACK time; Tdata = L/R.</td></tr>
+          <tr><td>Sliding window utilization</td><td><code>min(1, W × Tdata / (RTT + Tdata))</code></td><td>Approximation with ACK time negligible and no loss.</td></tr>
+          <tr><td>IPv4 address patterns in /n</td><td><code>2^(32 − n)</code></td><td>Total patterns; conventional host count often subtracts network and broadcast.</td></tr>
+          <tr><td>IPv4 prefix mask</td><td><code>n leading 1 bits, then 0 bits</code></td><td>Example /24 = 255.255.255.0.</td></tr>
+        </tbody></table></div>
+        <div class="callout gold"><strong>Units checklist:</strong> convert ms → s; Mb/s → bits/s; bytes → bits by multiplying by 8. Keep L in bits if R is in bits/s. If you derive utilization, multiply the fraction by 100 for a percentage.</div>
+        <h3>Try the utilization calculator</h3>
+        <p>Assumptions: one data packet in transmission time <em>L/R</em>, ACK transmission/processing ignored, and RTT provided directly.</p>
+        <div class="calc-form">
+          <label>Packet size (bytes)<input id="calcBytes" type="number" min="1" value="1200"></label>
+          <label>Link rate (Mb/s)<input id="calcRate" type="number" min="0.001" step="any" value="10"></label>
+          <label>RTT (ms)<input id="calcRtt" type="number" min="0" step="any" value="80"></label>
+          <label>Window W (packets)<input id="calcWindow" type="number" min="1" step="1" value="1"></label>
+          <button id="calcButton" class="primary" type="button">Calculate</button>
+        </div>
+        <p id="calcResult" class="result" aria-live="polite">Enter values and calculate.</p>
+        <h3>Mechanisms in one breath</h3>
+        <div class="grid">
+          <div class="card"><h4>DHCP · DORA</h4><p>Discover → Offer → Request → Ack. Uses UDP 67/68; configures address, mask, gateway, DNS lease.</p></div>
+          <div class="card"><h4>ARP</h4><p>Broadcast “who has this local IPv4 address?” → owner replies with MAC → cache mapping.</p></div>
+          <div class="card"><h4>DNS</h4><p>Check cache → ask recursive resolver → follow root/TLD/authoritative referrals as needed → cache answer according to TTL.</p></div>
+          <div class="card"><h4>TCP open</h4><p>Client SYN → server SYN+ACK → client ACK. Exchange initial sequence numbers; connection state is established.</p></div>
+          <div class="card"><h4>TCP close</h4><p>Each direction FINs independently; peer ACKs. RST is an abrupt abort.</p></div>
+          <div class="card"><h4>Switch learning</h4><p>Learn source MAC on ingress port → look up destination → known unicast, or flood unknown/broadcast in the VLAN.</p></div>
+          <div class="card"><h4>Spanning tree</h4><p>Elect root → choose loop-free forwarding tree → block redundant ports → recover topology when active path fails.</p></div>
+          <div class="card"><h4>CSMA/CA</h4><p>Listen → defer if busy → random backoff → transmit → wait for ACK; retry if no ACK. Avoid, rather than detect, wireless collisions.</p></div>
+        </div>
+      </section>
+
+      <section class="panel" id="exam-practice">
+        <div class="section-kicker">Open-answer readiness · Practice explaining out loud</div>
+        <h2>Exam scenarios with answer-building guides</h2>
+        <p>Before revealing each guide, try to write a short answer using the terms from the course. Strong answers state the mechanism, walk through events in order, and explain why.</p>
+        <details>
+          <summary>Scenario 1 · Stop-and-Wait packet or ACK loss</summary>
+          <p><strong>Prompt:</strong> Sender transmits frame 0. The receiver gets it and sends an ACK, but the ACK is lost. Explain what happens next and why the application does not receive duplicate data.</p>
+          <p><strong>Answer guide:</strong> Sender timer expires because no ACK arrived; sender retransmits frame 0. Receiver recognizes the sequence number as a duplicate, discards duplicate payload, and sends the ACK again. Sender then advances to the next sequence number. Name timeout, sequence number, duplicate detection, and re-ACK.</p>
+        </details>
+        <details>
+          <summary>Scenario 2 · Go-Back-N loss in a window</summary>
+          <p><strong>Prompt:</strong> Sender sends frames 0, 1, 2, 3. Frame 1 is lost; later frames reach a receiver that only accepts in-order data. Describe ACKs and retransmission.</p>
+          <p><strong>Answer guide:</strong> Receiver accepts 0 and cumulatively ACKs the next expected frame (1). It discards out-of-order 2 and 3 and repeats an ACK indicating 1 is still missing. After timeout/fast-loss inference, sender retransmits 1 and outstanding later frames (1, 2, 3). Contrast with Selective Repeat, which can buffer later frames and retransmit only missing data.</p>
+        </details>
+        <details>
+          <summary>Scenario 3 · TCP receiver is slow, network is healthy</summary>
+          <p><strong>Prompt:</strong> The application at the receiver is not reading data quickly. Which TCP mechanism should limit the sender, and what is it protecting?</p>
+          <p><strong>Answer guide:</strong> Receiver advertises a smaller receive window (rwnd), limiting outstanding bytes and protecting its buffer. Do not call this congestion control; cwnd estimates a network-safe sending amount. Sender is constrained by min(rwnd, cwnd).</p>
+        </details>
+        <details>
+          <summary>Scenario 4 · Remote web server on another subnet</summary>
+          <p><strong>Prompt:</strong> A laptop resolves a server’s IP, but it is outside the laptop’s subnet. Which MAC address goes in the first Ethernet frame? What changes at the router?</p>
+          <p><strong>Answer guide:</strong> The frame’s destination MAC is the local default gateway’s MAC, obtained via ARP if not cached. IP destination remains the remote server’s IP. Router removes the incoming link frame and sends a new frame on the next link, with new source/destination MACs. The IP source/destination generally remain end-host addresses (apart from mechanisms such as NAT).</p>
+        </details>
+        <details>
+          <summary>Scenario 5 · Two VLANs share a switch</summary>
+          <p><strong>Prompt:</strong> Hosts on VLAN 10 and VLAN 20 use the same physical switch. Can an Ethernet broadcast from VLAN 10 reach VLAN 20? Explain.</p>
+          <p><strong>Answer guide:</strong> No. VLANs form separate logical Layer-2 broadcast domains. Switch forwarding/flooding is VLAN-scoped; 802.1Q tags carry VLAN identity on trunks. Communication between VLANs needs Layer-3 routing.</p>
+        </details>
+        <details>
+          <summary>Scenario 6 · A Wi-Fi station has data to send</summary>
+          <p><strong>Prompt:</strong> Explain how CSMA/CA reduces collisions and how the station knows a frame was received.</p>
+          <p><strong>Answer guide:</strong> Station senses channel; if busy, defers. It waits a randomized backoff to reduce simultaneous starts, then transmits and waits for an ACK. No ACK implies likely loss/collision/interference and can trigger retry/backoff. A hidden station may not hear another transmitter; RTS/CTS can help reserve the medium.</p>
+        </details>
+        <details>
+          <summary>Scenario 7 · Calculate a Stop-and-Wait utilization</summary>
+          <p><strong>Prompt:</strong> A 1000-byte frame goes over a 1 Mb/s link. RTT is 40 ms; ACK time is negligible. Estimate utilization.</p>
+          <p><strong>Answer guide:</strong> Convert 1000 bytes to 8000 bits. Tdata = 8000 / 1,000,000 = 0.008 s = 8 ms. U = 8/(40+8) = 1/6 ≈ 0.167, or about 16.7%. State the assumption that ACK time is negligible.</p>
+        </details>
+        <details>
+          <summary>Scenario 8 · DHCP, DNS, HTTP in a new network</summary>
+          <p><strong>Prompt:</strong> A host joins a LAN and then browses to a domain it has not visited. Explain the main protocols and order.</p>
+          <p><strong>Answer guide:</strong> DHCP DORA assigns an address, subnet mask, gateway, DNS server. DNS resolver obtains the domain’s IP (unless cached). Host compares prefix; if remote, it ARPs for gateway MAC. TCP handshake establishes process-to-process connection; HTTP GET is carried as TCP bytes inside IP packets/frames. Response follows reverse path; each router rebuilds link-layer frames.</p>
+        </details>
+        <h3>Answer skeleton</h3>
+        <pre>1. Name the layer/protocol.
+2. State the problem it solves.
+3. Trace events in order (who sends what to whom?).
+4. Say what can be lost/changed/learned at each step.
+5. State the outcome and any assumption.</pre>
+        <p class="callout"><strong>Self-mark:</strong> Could a classmate draw your answer from your words? Did you distinguish IP/MAC, flow/congestion control, and transmission/propagation delay? Did you include units for arithmetic?</p>
+      </section>
+
+      <section class="panel" id="flashcards">
+        <div class="section-kicker">Retrieval practice · 18 flashcards</div>
+        <h2>Flashcards</h2>
+        <p>Say the answer before revealing it. If you miss a card, revisit its lecture section and try again later.</p>
+        <div class="flashcard" aria-live="polite"><div class="deck-label" id="flashCount">Card 1 of 18</div><p class="prompt" id="flashQuestion"></p><p id="flashAnswer" hidden></p></div>
+        <div class="button-row"><button id="flashPrev" type="button">Previous</button><button id="flashReveal" class="primary" type="button">Reveal answer</button><button id="flashNext" type="button">Next</button><button id="flashShuffle" type="button">Shuffle deck</button></div>
+      </section>
+
+      <section class="panel" id="quiz">
+        <div class="section-kicker">Practice quiz · mixed concepts</div>
+        <h2>Check your understanding</h2>
+        <p>Choose an answer for each question. You will see an explanation for every answer; no score is saved or sent anywhere.</p>
+        <form id="quizForm"></form>
+        <div class="button-row"><button id="checkQuiz" class="primary" type="button">Check answers</button><button id="clearQuiz" type="button">Clear quiz</button></div>
+        <p id="quizScore" class="result" aria-live="polite"></p>
+      </section>
+
+      <section class="panel">
+        <div class="section-kicker">Personal confidence plan</div>
+        <h2>What “exam ready” should feel like</h2>
+        <div class="checklist">
+          <label><input type="checkbox" data-progress> I can describe IP best-effort service and explain why TCP adds reliability.</label>
+          <label><input type="checkbox" data-progress> I can draw encapsulation and name what each layer addresses.</label>
+          <label><input type="checkbox" data-progress> I can compare Stop-and-Wait, Go-Back-N, and Selective Repeat after a loss.</label>
+          <label><input type="checkbox" data-progress> I can explain TCP handshake, teardown, flow control, congestion control, and RTO.</label>
+          <label><input type="checkbox" data-progress> I can solve delay, BDP, utilization, and simple subnet questions with units.</label>
+          <label><input type="checkbox" data-progress> I can trace a switch learning a MAC and explain why STP blocks a loop.</label>
+          <label><input type="checkbox" data-progress> I can tell what DHCP, ARP, DNS, and the default gateway each do.</label>
+          <label><input type="checkbox" data-progress> I can write an open-ended answer with a clear, correctly ordered packet journey.</label>
+        </div>
+      </section>
+    </main>
+  </div>
+  <footer>
+    <p>Independent study resource based on the user-provided NOVA FCT Computer Networks PDF. No external scripts, tracking, accounts, or network connection required.</p>
+    <a href="#top">Back to top ↑</a>
+  </footer>
+
+  <script>
+    "use strict";
+    const byId = (id) => document.getElementById(id);
+
+    byId("printPage").addEventListener("click", () => window.print());
+
+    const progressChecks = [...document.querySelectorAll("[data-progress]")];
+    const progressBar = byId("progressBar");
+    const progressShell = document.querySelector('[role="progressbar"]');
+    const progressLabel = byId("progressLabel");
+    function updateProgress() {
+      const completed = progressChecks.filter((input) => input.checked).length;
+      const ratio = completed / progressChecks.length;
+      progressBar.style.width = `${ratio * 100}%`;
+      progressShell.setAttribute("aria-valuemax", String(progressChecks.length));
+      progressShell.setAttribute("aria-valuenow", String(completed));
+      progressLabel.textContent = `${completed} of ${progressChecks.length} checked`;
+      try {
+        localStorage.setItem("cn-study-progress", JSON.stringify(progressChecks.map((input) => input.checked)));
+      } catch (error) {
+        console.warn("Could not save study progress in this browser.", error);
+      }
+    }
+    try {
+      const saved = JSON.parse(localStorage.getItem("cn-study-progress") || "[]");
+      progressChecks.forEach((input, i) => { input.checked = saved[i] === true; });
+    } catch (error) {
+      console.warn("Could not restore study progress from this browser.", error);
+    }
+    progressChecks.forEach((input) => input.addEventListener("change", updateProgress));
+    updateProgress();
+
+    const formulas = {
+      ms: (x) => x / 1000,
+      bytes: (x) => x * 8
+    };
+    byId("calcButton").addEventListener("click", () => {
+      const bytes = Number(byId("calcBytes").value);
+      const rateMbps = Number(byId("calcRate").value);
+      const rttMs = Number(byId("calcRtt").value);
+      const windowPackets = Number(byId("calcWindow").value);
+      if (![bytes, rateMbps, rttMs, windowPackets].every(Number.isFinite) ||
+          bytes <= 0 || rateMbps <= 0 || rttMs < 0 || windowPackets < 1) {
+        byId("calcResult").textContent = "Enter positive packet size/rate, non-negative RTT, and a window of at least 1.";
+        return;
+      }
+      const dataSeconds = formulas.bytes(bytes) / (rateMbps * 1e6);
+      const rttSeconds = formulas.ms(rttMs);
+      const utilization = Math.min(1, windowPackets * dataSeconds / (rttSeconds + dataSeconds));
+      byId("calcResult").textContent =
+        `Tdata = ${(dataSeconds * 1000).toPrecision(4)} ms · estimated utilization = ${(utilization * 100).toFixed(2)}% (ACK time ignored).`;
+    });
+
+    const journey = [
+      {
+        title: "Application begins",
+        text: "The browser needs an address for the name and a connection to the web server.",
+        question: "What question must the host answer before sending an IP packet?",
+        answer: "It needs an IP address for the server name. A cached DNS answer may already provide one."
+      },
+      {
+        title: "Check caches",
+        text: "The browser, operating system, or recursive resolver may already have a valid DNS answer.",
+        question: "Why does caching matter?",
+        answer: "A cached answer avoids more DNS queries and reduces lookup time, subject to its TTL."
+      },
+      {
+        title: "Ask DNS if needed",
+        text: "A recursive resolver may contact root, TLD, and authoritative DNS servers to obtain an A or AAAA record.",
+        question: "Does DNS return the server's Ethernet MAC address?",
+        answer: "No. DNS maps a name to an IP address. ARP/NDP is used to find the local link-layer next hop."
+      },
+      {
+        title: "Choose local host or gateway",
+        text: "The client compares the server IP with its own subnet prefix. If the destination is remote, the next hop is the default gateway.",
+        question: "If the web server is on another network, whose MAC is needed on the first LAN?",
+        answer: "The default gateway's MAC, not the remote server's MAC."
+      },
+      {
+        title: "Resolve next-hop MAC",
+        text: "If it is not cached, ARP broadcasts a local IPv4 query for the next-hop IP; the owner replies with a MAC address.",
+        question: "What is the difference between ARP and DNS?",
+        answer: "DNS maps domain names to IP addresses; ARP maps a local IPv4 next-hop address to a MAC address."
+      },
+      {
+        title: "Establish TCP",
+        text: "The client and server exchange SYN, SYN-ACK, ACK, including their starting sequence numbers.",
+        question: "What identifies the server process as well as the server host?",
+        answer: "The destination IP gets traffic to the host; the TCP destination port helps deliver it to the correct process."
+      },
+      {
+        title: "Send HTTP GET",
+        text: "An HTTP request such as GET / is application data carried as bytes in a TCP stream.",
+        question: "Does TCP preserve each application write as a separate message?",
+        answer: "No. TCP is a byte stream. The application protocol defines message framing."
+      },
+      {
+        title: "Cross network hops",
+        text: "TCP segments are inside IP datagrams; each link wraps a datagram in its own frame. Routers forward using IP.",
+        question: "What commonly changes at each routed link: IP destination or Ethernet destination MAC?",
+        answer: "The link-layer MAC addresses change for each hop. The IP destination remains the remote server (unless NAT modifies addressing)."
+      },
+      {
+        title: "Receive and render",
+        text: "The server returns HTTP bytes. TCP reassembles an ordered stream for the browser, which processes the response.",
+        question: "Which layer's job is reliable in-order byte-stream delivery?",
+        answer: "TCP at the transport layer."
+      }
+    ];
+    let journeyIndex = 0;
+    function renderJourney() {
+      const item = journey[journeyIndex];
+      byId("dnsCounter").textContent = `Step ${journeyIndex + 1} of ${journey.length}`;
+      byId("dnsTitle").textContent = item.title;
+      byId("dnsText").textContent = item.text;
+      byId("dnsQuestion").textContent = item.question;
+      byId("dnsAnswer").textContent = item.answer;
+      byId("dnsNext").textContent = journeyIndex === journey.length - 1 ? "Restart journey" : "Next step";
+    }
+    byId("dnsNext").addEventListener("click", () => { journeyIndex = (journeyIndex + 1) % journey.length; renderJourney(); });
+    byId("dnsPrev").addEventListener("click", () => { journeyIndex = (journeyIndex + journey.length - 1) % journey.length; renderJourney(); });
+    byId("dnsReset").addEventListener("click", () => { journeyIndex = 0; renderJourney(); });
+    renderJourney();
+
+    const flashcards = [
+      ["What does “best effort” mean for IP?", "IP tries to deliver datagrams but does not guarantee delivery, order, or a delay bound."],
+      ["What do IP and transport ports identify?", "IP addresses identify network interfaces/endpoints across networks; ports demultiplex transport traffic to processes."],
+      ["What is encapsulation?", "Each lower layer wraps higher-layer data with its own header (and sometimes trailer); the receiver removes them in reverse."],
+      ["What does write_all() protect against?", "A successful write may transfer fewer bytes than requested. The loop continues until all bytes are written or an error occurs."],
+      ["Transmission delay vs propagation delay?", "L/R is the time to put L bits onto the link; d/s is the time for the signal to travel distance d."],
+      ["What is the bandwidth-delay product?", "Rate × delay; it estimates the amount of data (bits) that can be in flight."],
+      ["Why is Stop-and-Wait inefficient on a long-RTT path?", "Only one packet can be outstanding, so the sender waits through most of each RTT instead of filling the link."],
+      ["What does Go-Back-N retransmit after a missing frame?", "The missing frame and later outstanding frames, typically because the receiver discarded out-of-order data."],
+      ["What is Selective Repeat's loss-recovery advantage?", "It can buffer valid out-of-order frames and retransmit only missing/unacknowledged ones."],
+      ["How does TCP establish a connection?", "Three-way handshake: SYN, SYN-ACK, ACK; both sides establish state and exchange initial sequence numbers."],
+      ["Flow control vs congestion control?", "rwnd protects the receiver's buffer; cwnd limits sending to protect the network."],
+      ["What does a switch learn?", "Source MAC address on the input port, associated with the relevant VLAN."],
+      ["What does STP prevent?", "Persistent Layer-2 loops by making the active forwarding topology a loop-free tree."],
+      ["What does a VLAN create?", "A logical Layer-2 network/broadcast domain over shared switch infrastructure."],
+      ["What does DHCP DORA stand for?", "Discover, Offer, Request, Acknowledge; DHCP supplies a leased address and related configuration."],
+      ["When does a host ARP for its gateway?", "When it must send an IPv4 packet off-subnet and has no cached mapping for the gateway's local MAC."],
+      ["DNS vs ARP?", "DNS maps names to IP addresses; ARP maps local IPv4 next-hop addresses to MAC addresses."],
+      ["What stays the same across a routed path?", "The end-host IP source/destination usually remain; link-layer MAC addresses are rebuilt at each hop (NAT can modify IP/ports)."]
+    ];
+    let flashOrder = flashcards.map((_, i) => i);
+    let flashIndex = 0;
+    function renderFlashcard() {
+      const [question, answer] = flashcards[flashOrder[flashIndex]];
+      byId("flashCount").textContent = `Card ${flashIndex + 1} of ${flashOrder.length}`;
+      byId("flashQuestion").textContent = question;
+      byId("flashAnswer").textContent = answer;
+      byId("flashAnswer").hidden = true;
+      byId("flashReveal").textContent = "Reveal answer";
+    }
+    byId("flashReveal").addEventListener("click", () => {
+      const answer = byId("flashAnswer");
+      answer.hidden = !answer.hidden;
+      byId("flashReveal").textContent = answer.hidden ? "Reveal answer" : "Hide answer";
+    });
+    byId("flashPrev").addEventListener("click", () => { flashIndex = (flashIndex + flashOrder.length - 1) % flashOrder.length; renderFlashcard(); });
+    byId("flashNext").addEventListener("click", () => { flashIndex = (flashIndex + 1) % flashOrder.length; renderFlashcard(); });
+    byId("flashShuffle").addEventListener("click", () => {
+      for (let i = flashOrder.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [flashOrder[i], flashOrder[j]] = [flashOrder[j], flashOrder[i]];
+      }
+      flashIndex = 0;
+      renderFlashcard();
+    });
+    renderFlashcard();
+
+    const questions = [
+      { q: "Which statement best describes IP?", options: ["Reliable, ordered delivery is guaranteed", "Best-effort packet delivery across networks", "A protocol for mapping domain names to MAC addresses"], answer: 1, why: "IP provides network-layer addressing and forwarding but no inherent delivery or order guarantee." },
+      { q: "Which address normally identifies a process endpoint at the transport layer?", options: ["TCP/UDP port", "Ethernet preamble", "Subnet mask"], answer: 0, why: "Ports help the operating system demultiplex traffic to processes." },
+      { q: "What happens during decapsulation at the destination?", options: ["Headers are removed as data moves up the stack", "The source MAC is learned by DNS", "The IP packet is automatically retransmitted"], answer: 0, why: "Each receiving layer processes and removes its corresponding encapsulation." },
+      { q: "A link rate increases. Which delay directly decreases for a fixed-size packet?", options: ["Propagation delay", "Transmission delay", "Physical distance"], answer: 1, why: "Transmission delay L/R falls as R increases. Propagation delay depends on distance and signal speed." },
+      { q: "Why can packet switching be efficient for bursty traffic?", options: ["Every user gets a permanently reserved path", "Users statistically share link capacity when they need it", "It removes all queues and packet loss"], answer: 1, why: "Statistical multiplexing shares capacity, though overload can still cause queueing and loss." },
+      { q: "What does UDP add to IP in the lecture summary?", options: ["Ports for process multiplexing", "A reliable ordered byte stream", "A three-way handshake"], answer: 0, why: "UDP adds transport ports and a checksum, but not reliability or a connection handshake." },
+      { q: "In Stop-and-Wait, the data arrives but its ACK is lost. How does the receiver avoid duplicate delivery?", options: ["A sequence number identifies a retransmitted duplicate", "DNS discards the duplicate", "The sender changes its IP address"], answer: 0, why: "The receiver recognizes the old sequence number, does not deliver the payload twice, and can resend the ACK." },
+      { q: "What is Go-Back-N's typical response to a lost in-window frame?", options: ["Retransmit only the missing frame and never later ones", "Retransmit the missing frame and later outstanding frames", "Close the TCP connection with RST"], answer: 1, why: "GBN typically uses in-order reception and retransmits from the missing frame onward." },
+      { q: "Which TCP window protects the receiver from buffer overflow?", options: ["Advertised receive window (rwnd)", "Ethernet window", "DNS TTL"], answer: 0, why: "rwnd reflects receiver capacity; cwnd is the congestion-control limit." },
+      { q: "What is the TCP three-way handshake?", options: ["SYN, SYN-ACK, ACK", "DISCOVER, OFFER, REQUEST", "ARP, DNS, HTTP"], answer: 0, why: "The handshake exchanges initial sequence numbers and establishes connection state." },
+      { q: "For 10.0.4.7/24, what is the network address?", options: ["10.0.4.0", "10.0.0.0", "10.0.4.255/8"], answer: 0, why: "A /24 keeps the first three octets as the prefix; zeroing host bits gives 10.0.4.0." },
+      { q: "What does NAT commonly do in a private IPv4 network?", options: ["Maps internal address/port flows through a public address", "Converts every MAC address into a DNS name", "Guarantees packet delivery"], answer: 0, why: "NAT translates addressing (often including ports) between private and public-side flows." },
+      { q: "How does a learning switch build a MAC table?", options: ["Learn the source MAC and ingress port from arriving frames", "Ask a DNS server after each frame", "Use the IP TTL to guess the port"], answer: 0, why: "Source address plus input port gives the switch a local forwarding-table entry." },
+      { q: "Why is spanning tree useful?", options: ["It creates a loop-free active topology while retaining redundant cabling", "It resolves IPv4 names", "It makes all Ethernet broadcasts routable"], answer: 0, why: "STP blocks selected redundant paths to prevent Layer-2 loops and flooding cycles." },
+      { q: "What does a switch normally do with an unknown unicast destination?", options: ["Flood it out other eligible ports in the VLAN", "Drop it and erase its IP address", "Send it to the DNS root"], answer: 0, why: "Flooding lets the destination receive the frame; a reply can teach the switch its port." },
+      { q: "What does CSMA/CA use to reduce simultaneous Wi-Fi transmissions?", options: ["Listen, defer, randomized backoff, and ACK", "SYN, SYN-ACK, FIN", "A fixed circuit reserved for every station"], answer: 0, why: "Wi-Fi coordinates medium access by sensing and randomized backoff; acknowledgments help detect missing frames." },
+      { q: "What does a VLAN separate?", options: ["Layer-2 broadcast domains logically", "The TCP source and destination port fields", "The bits in an IPv6 address"], answer: 0, why: "VLANs provide separate logical LANs over shared switching infrastructure." },
+      { q: "In DHCP DORA, what comes after Offer?", options: ["Request", "Discover", "A second DNS response"], answer: 0, why: "The client requests the offered configuration, then receives the server's acknowledgment." },
+      { q: "A client sends to a remote IPv4 server. Which MAC is the first-hop destination?", options: ["The local default gateway's MAC", "The remote server's MAC across the Internet", "The DNS server's MAC in all cases"], answer: 0, why: "Ethernet only reaches the local next hop; a remote destination is forwarded to the gateway." },
+      { q: "Which mapping does ARP provide?", options: ["Local IPv4 address to MAC address", "Domain name to IPv6 address", "TCP port to application source code"], answer: 0, why: "ARP resolves an IPv4 next-hop address into a Layer-2 MAC on the local link." },
+      { q: "What does DNS primarily resolve for a browser?", options: ["A domain name to an IP address", "An IP packet to a switch port", "A VLAN ID to an Ethernet CRC"], answer: 0, why: "DNS provides records such as A and AAAA that map names to IP addresses." },
+      { q: "A router forwards a packet to another link. What normally changes?", options: ["The outgoing link-layer frame/MAC addresses", "The remote destination IP at every router", "The HTTP request method"], answer: 0, why: "Each hop uses a new link-layer frame. End-host IP addresses generally persist, except when modified by NAT or related mechanisms." },
+      { q: "A /26 IPv4 prefix has how many total address patterns?", options: ["64", "26", "256"], answer: 0, why: "There are 32−26=6 host bits: 2^6=64 total patterns. Conventional usable host count is usually 62." },
+      { q: "What does TCP deliver to an application?", options: ["A reliable, ordered byte stream", "One guaranteed message per write call", "Ethernet frames including their MAC headers"], answer: 0, why: "TCP delivers ordered bytes; applications must define their own message framing." }
+    ];
+    const quizForm = byId("quizForm");
+    questions.forEach((item, index) => {
+      const fieldset = document.createElement("fieldset");
+      fieldset.className = "quiz-item";
+      const legend = document.createElement("legend");
+      legend.textContent = `${index + 1}. ${item.q}`;
+      fieldset.appendChild(legend);
+      item.options.forEach((option, optionIndex) => {
+        const label = document.createElement("label");
+        const radio = document.createElement("input");
+        radio.type = "radio";
+        radio.name = `question-${index}`;
+        radio.value = String(optionIndex);
+        label.append(radio, ` ${option}`);
+        fieldset.appendChild(label);
+      });
+      const feedback = document.createElement("p");
+      feedback.className = "quiz-feedback";
+      feedback.id = `quiz-feedback-${index}`;
+      feedback.setAttribute("aria-live", "polite");
+      fieldset.appendChild(feedback);
+      quizForm.appendChild(fieldset);
+    });
+    byId("checkQuiz").addEventListener("click", () => {
+      let score = 0;
+      let answered = 0;
+      questions.forEach((item, index) => {
+        const selected = quizForm.querySelector(`input[name="question-${index}"]:checked`);
+        const feedback = byId(`quiz-feedback-${index}`);
+        if (!selected) {
+          feedback.className = "quiz-feedback try-again";
+          feedback.textContent = "Choose an answer, then check again.";
+          return;
+        }
+        answered++;
+        const isCorrect = Number(selected.value) === item.answer;
+        if (isCorrect) score++;
+        feedback.className = `quiz-feedback ${isCorrect ? "good" : "try-again"}`;
+        feedback.textContent = `${isCorrect ? "Correct. " : "Review this one. "}${item.why}`;
+      });
+      byId("quizScore").textContent = `${score} / ${questions.length} correct · ${answered} answered. Read the explanations and retry any uncertain topics.`;
+    });
+    byId("clearQuiz").addEventListener("click", () => {
+      quizForm.reset();
+      questions.forEach((_, index) => {
+        const feedback = byId(`quiz-feedback-${index}`);
+        feedback.textContent = "";
+        feedback.className = "quiz-feedback";
+      });
+      byId("quizScore").textContent = "";
+    });
+  </script>
+</body>
+</html>
